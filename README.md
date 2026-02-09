@@ -21,6 +21,7 @@ I am documenting every major feature I learn.
 
 | Date | Topic | Description | Visual / Snapshot |
 | :--- | :--- | :--- | :--- |
-| **2026-2-10** | **Sprite Animation** | Setting Up a sprite and making it move with keyboard inputs. |  |
+| **2026-2-10** | **Sprite Animation** | Setting Up a sprite and making it move with keyboard inputs. | ![20260209-2304-41 9348846](https://github.com/user-attachments/assets/b87c9ce7-4e00-4910-82d3-f92a297105fd)
+ |
 
 ---
