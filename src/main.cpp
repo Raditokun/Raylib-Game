@@ -44,7 +44,7 @@ int main(){
 
     Animation anim = (Animation){0, 3, 0, 0.1, 0.1};
      Vector2 player_pos = {10,10}; //automaticly assums that its x and y??
-    Vector2 player_pos = {10, 10}; // Assigns {x, y} because Vector2 is defined as struct { float x; float y; }
+ 
     
     SetTargetFPS(60);
 
