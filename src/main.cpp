@@ -9,11 +9,11 @@ struct Animation {
     int cur; //current fram 
     float speed; //animation speed
     float duration_left; //time left for current frame
-    bool finished; //if the animation has finished
+    
     
 };
 
-void animation_update(Animation *self){
+bool animation_update(Animation *self){
     float dt = GetFrameTime(); //get delta time(time between frames)
     self->duration_left -= dt; //subtract delta time from duration left
 
@@ -23,10 +23,10 @@ void animation_update(Animation *self){
 
         if(self->cur > self->last){
             self->cur = self->first;
-            self->finished = true;
+            return true;
         }
     }
-    self->finished = false;
+    return false;
 }
 
 //getting the cords for the current frame
@@ -51,31 +51,67 @@ int main(){
     Animation anim_run = (Animation){0, 5, 0, 0.1, 0.1};
     Animation anim_attack =  (Animation){0, 3, 0, 0.1, 0.1};
      Vector2 player_pos = {10,10}; //automaticly assums that its x and y??
+
+
+
+      //attack logic
+     bool attack = false;
+
+     
+    
+     
  
     
     SetTargetFPS(60);
 
      while(!WindowShouldClose()){
+
+        //Attack Logic
+        if (IsKeyPressed(KEY_ENTER) && !attack){
+         attack = true;
+         anim_attack.cur = 0; //reset attack animation to first frame
+         anim_attack.duration_left = anim_attack.speed  ; //reset duration left
+     }
+
+     if(attack){
+        if(animation_update(&anim_attack)){
+            attack = false;
+            anim_attack.cur = 0;
+        }
+     }else{
         animation_update(&anim_idle);
         animation_update(&anim_run);
-        animation_update(&anim_attack);
+
+        if(IsKeyDown(KEY_LEFT)){
+            player_pos.x -= 2;
+
+        }
+        if(IsKeyDown(KEY_RIGHT)){
+            player_pos.x += 2;
+
+        }
+        
+     }
+
+
         BeginDrawing();
         ClearBackground(WHITE);
         
 
         
-        if (IsKeyDown(KEY_RIGHT)){
-            DrawTexturePro(player_run,animation_frame(&anim_run, 6), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
-            player_pos.x += 2;
+        if (attack){
+            DrawTexturePro(player_attack,animation_frame(&anim_attack, 4), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
+
         }
         else if (IsKeyDown(KEY_LEFT)){
             Rectangle source = animation_frame(&anim_run, 6);
             source.width *= -1; //flip the sprite
              DrawTexturePro(player_run,source, {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
-            player_pos.x -= 2;
+            
         }
-        else if(IsKeyPressed(KEY_ENTER)){
-            DrawTexturePro(player_attack,animation_frame(&anim_attack, 4), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
+        else if (IsKeyDown(KEY_RIGHT)){
+            DrawTexturePro(player_run,animation_frame(&anim_run, 6), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
+            
         } else {
             DrawTexturePro(player_idle,animation_frame(&anim_idle, 4), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
         }
@@ -90,6 +126,6 @@ int main(){
 
     
 
-     CloseWindow();
+    CloseWindow();
     return 0;
 }
