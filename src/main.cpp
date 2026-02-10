@@ -9,6 +9,7 @@ struct Animation {
     int cur; //current fram 
     float speed; //animation speed
     float duration_left; //time left for current frame
+    bool finished; //if the animation has finished
     
 };
 
@@ -22,11 +23,14 @@ void animation_update(Animation *self){
 
         if(self->cur > self->last){
             self->cur = self->first;
+            self->finished = true;
         }
     }
+    self->finished = false;
 }
 
-//getting the cords for the current frame??
+//getting the cords for the current frame
+//the math for finding the x and y position of each frame in the sprite sheet
 Rectangle animation_frame(Animation *self, int num_frames_per_row){
        int x = (self->cur % num_frames_per_row) * 16.0; 
        int y = (self->cur / num_frames_per_row) * 16.0;
@@ -40,28 +44,49 @@ int main(){
 
     InitWindow(600, 400, "Aimlab game");
     Texture2D player_idle = LoadTexture("src/asset/herochar sprites(new)/herochar_idle_anim_strip_4.png");
+    Texture2D player_run = LoadTexture("src/asset/herochar sprites(new)/herochar_run_anim_strip_6.png");
+    Texture2D player_attack = LoadTexture("src/asset/herochar sprites(new)/herochar_sword_attack_anim_strip_4.png");
 
-
-    Animation anim = (Animation){0, 3, 0, 0.1, 0.1};
+    Animation anim_idle = (Animation){0, 3, 0, 0.1, 0.1};
+    Animation anim_run = (Animation){0, 5, 0, 0.1, 0.1};
+    Animation anim_attack =  (Animation){0, 3, 0, 0.1, 0.1};
      Vector2 player_pos = {10,10}; //automaticly assums that its x and y??
  
     
     SetTargetFPS(60);
 
      while(!WindowShouldClose()){
-        animation_update(&anim);
+        animation_update(&anim_idle);
+        animation_update(&anim_run);
+        animation_update(&anim_attack);
         BeginDrawing();
         ClearBackground(WHITE);
+        
 
-        DrawTexturePro(player_idle,animation_frame(&anim, 4), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
+        
         if (IsKeyDown(KEY_RIGHT)){
+            DrawTexturePro(player_run,animation_frame(&anim_run, 6), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
             player_pos.x += 2;
         }
+        else if (IsKeyDown(KEY_LEFT)){
+            Rectangle source = animation_frame(&anim_run, 6);
+            source.width *= -1; //flip the sprite
+             DrawTexturePro(player_run,source, {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
+            player_pos.x -= 2;
+        }
+        else if(IsKeyPressed(KEY_ENTER)){
+            DrawTexturePro(player_attack,animation_frame(&anim_attack, 4), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
+        } else {
+            DrawTexturePro(player_idle,animation_frame(&anim_idle, 4), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
+        }
+        
             
         EndDrawing();
     }
 
     UnloadTexture(player_idle);
+    UnloadTexture(player_run);
+    UnloadTexture(player_attack);
 
     
 
