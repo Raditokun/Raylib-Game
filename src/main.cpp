@@ -46,16 +46,26 @@ int main(){
     Texture2D player_idle = LoadTexture("src/asset/herochar sprites(new)/herochar_idle_anim_strip_4.png");
     Texture2D player_run = LoadTexture("src/asset/herochar sprites(new)/herochar_run_anim_strip_6.png");
     Texture2D player_attack = LoadTexture("src/asset/herochar sprites(new)/herochar_sword_attack_anim_strip_4.png");
+    Texture2D player_jump = LoadTexture("src/asset/herochar sprites(new)/herochar_jump_up_anim_strip_3.png");
 
     Animation anim_idle = (Animation){0, 3, 0, 0.1, 0.1};
     Animation anim_run = (Animation){0, 5, 0, 0.1, 0.1};
     Animation anim_attack =  (Animation){0, 3, 0, 0.1, 0.1};
-     Vector2 player_pos = {10,10}; //automaticly assums that its x and y??
+    Animation anim_jump = (Animation){0, 2, 0, 0.15f, 0.15f};
+     Vector2 player_pos = {10,300}; //automaticly assums that its x and y??
 
 
 
-      //attack logic
+      //bool state
      bool attack = false;
+     
+
+     //jump physics
+    float velocity_y = 0.0f;   //jump velocity 
+    float gravity = 0.5f;        
+    float jump_force = 10.0f;    
+    float ground_level = 300.0f; 
+    bool is_on_ground = false;
 
      
     
@@ -65,6 +75,29 @@ int main(){
     SetTargetFPS(60);
 
      while(!WindowShouldClose()){
+
+        //jump logic    
+        velocity_y += gravity; //gravity
+
+        player_pos.y += velocity_y; //??
+
+        if (player_pos.y >= ground_level) {
+            player_pos.y = ground_level;
+            velocity_y = 0.0f;
+            is_on_ground = true;
+        } else {
+            is_on_ground = false;
+        }//??
+
+        if(IsKeyPressed(KEY_SPACE) && is_on_ground && !attack){
+            velocity_y = -jump_force; //apply jump force
+            is_on_ground = false; 
+
+        anim_jump.cur = 0; // reset frame  
+        }
+          
+
+
 
         //Attack Logic
         if (IsKeyPressed(KEY_ENTER) && !attack){
@@ -79,9 +112,12 @@ int main(){
             anim_attack.cur = 0;
         }
      }else{
+        if(is_on_ground){
         animation_update(&anim_idle);
         animation_update(&anim_run);
-
+        }else{
+            animation_update(&anim_jump);
+        }
         if(IsKeyDown(KEY_LEFT)){
             player_pos.x -= 2;
 
@@ -103,6 +139,9 @@ int main(){
             DrawTexturePro(player_attack,animation_frame(&anim_attack, 4), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
 
         }
+        else if (!is_on_ground){
+            DrawTexturePro(player_jump,animation_frame(&anim_jump, 3), {player_pos.x,player_pos.y,100,100},{0,0}, 0, WHITE);
+        }
         else if (IsKeyDown(KEY_LEFT)){
             Rectangle source = animation_frame(&anim_run, 6);
             source.width *= -1; //flip the sprite
@@ -123,6 +162,7 @@ int main(){
     UnloadTexture(player_idle);
     UnloadTexture(player_run);
     UnloadTexture(player_attack);
+    UnloadTexture(player_jump);
 
     
 
