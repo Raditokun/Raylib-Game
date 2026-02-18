@@ -1,4 +1,4 @@
-![20260218-0556-28 1753991](https://github.com/user-attachments/assets/4169228c-cf4a-4c83-af7d-cdda3b1cb744)# 🎮 My Raylib C++ Journey
+# 🎮 My Raylib C++ Journey
 
 ![C++](https://img.shields.io/badge/c++-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![Raylib](https://img.shields.io/badge/Raylib-4.5-red?style=for-the-badge)
